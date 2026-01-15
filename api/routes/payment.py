@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import os
 import sqlite3
 from eth_account import Account
+import time
 
 payment_app = Blueprint('payment', __name__)
 
@@ -19,7 +20,8 @@ def init_db():
                 address TEXT NOT NULL,
                 private_key TEXT NOT NULL,
                 amount NUMERIC NOT NULL,
-                status TEXT NOT NULL
+                status TEXT NOT NULL,
+                created_at INTEGER NOT NULL
             )
         """)
 
@@ -57,8 +59,8 @@ def create_payment():
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO payments (address, private_key, amount, status) VALUES (?, ?, ?, ?)",
-            (address, private_key_hex, amount, 'waiting-payment')
+            "INSERT INTO payments (address, private_key, amount, status, created_at) VALUES (?, ?, ?, ?, ?)",
+            (address, private_key_hex, amount, 'waiting-payment', int(time.time()))
         )
         payment_id = cur.lastrowid
         conn.commit()

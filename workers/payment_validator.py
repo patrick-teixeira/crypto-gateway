@@ -4,6 +4,7 @@ import signal
 import sqlite3
 from decimal import Decimal
 from web3 import Web3
+from time import sleep
 
 DB_PATH = "data/payments.db"
 w3 = Web3(Web3.HTTPProvider("https://api.roninchain.com/rpc"))
@@ -70,4 +71,6 @@ def get_usdc_balance(address: str) -> float:
     return float(balance)
 
 if __name__ == '__main__':
-    validate_payments()
+    while True:
+        validate_payments()
+        sleep(1)
