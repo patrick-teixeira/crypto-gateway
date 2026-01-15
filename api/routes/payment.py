@@ -21,8 +21,10 @@ def init_db():
                 private_key TEXT NOT NULL,
                 amount NUMERIC NOT NULL,
                 status TEXT NOT NULL,
-                created_at INTEGER NOT NULL
-            )
+                created_at INTEGER NOT NULL,
+                webhook_url TEXT,
+                message TEXT
+            ) 
         """)
 
 def ensure_status_column():
@@ -30,8 +32,8 @@ def ensure_status_column():
         cur = conn.cursor()
         cur.execute("PRAGMA table_info(payments)")
         cols = [r[1] for r in cur.fetchall()]
-        if 'status' not in cols:
-            cur.execute("ALTER TABLE payments ADD COLUMN status TEXT NOT NULL DEFAULT 'waiting-payment'")
+        if 'message' not in cols:
+            cur.execute("ALTER TABLE payments ADD COLUMN message TEXT DEFAULT NULL")
             conn.commit()
 
 init_db()
@@ -40,7 +42,8 @@ ensure_status_column()
 @payment_app.route('/create_payment', methods=['POST'])
 def create_payment():
     data = request.get_json(silent=True) or {}
-    amount = data.get('amount') or data.get('valor')
+    amount = data.get('amount')
+    webhook_url = data.get('webhook_url')
 
     try:
         amount = float(amount)
@@ -50,22 +53,19 @@ def create_payment():
     if amount <= 0:
         return jsonify({'error': 'amount must be greater than 0'}), 400
 
-    # Cria wallet Ethereum
     acct = Account.create()
     address = acct.address
     private_key_hex = acct.key.hex()
 
-    # Persiste no SQLite
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO payments (address, private_key, amount, status, created_at) VALUES (?, ?, ?, ?, ?)",
-            (address, private_key_hex, amount, 'waiting-payment', int(time.time()))
+            "INSERT INTO payments (address, private_key, amount, status, created_at, webhook_url) VALUES (?, ?, ?, ?, ?, ?)",
+            (address, private_key_hex, amount, 'waiting-payment', int(time.time()), webhook_url)
         )
         payment_id = cur.lastrowid
         conn.commit()
 
-    # Não retornamos a private key na resposta
     return jsonify({
         'message': 'Payment created',
         'payment_id': payment_id,

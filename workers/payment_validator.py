@@ -5,6 +5,10 @@ import sqlite3
 from decimal import Decimal
 from web3 import Web3
 from time import sleep
+import sys
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, BASE_DIR)
+from api import webhook
 
 DB_PATH = "data/payments.db"
 w3 = Web3(Web3.HTTPProvider("https://api.roninchain.com/rpc"))
@@ -29,14 +33,18 @@ def update_payment_status(id: int, new_status: str):
 def validate_payments():
     pending_payments = get_peding_payments()
     for payment in pending_payments:
-        address = payment['address']
-        amount = payment['amount']
-        id = payment['id']
-        wallet_balance = get_usdc_balance(address)
-        print(f'{address} balance: {wallet_balance}')
-        if wallet_balance >= amount:
-            update_payment_status(id, 'paid')
-            print('payment validated')
+        if payment['created_at'] + 3600 >= int(time.time()):
+            address = payment['address']
+            amount = payment['amount']
+            id = payment['id']
+            webhook_url = payment['webhook_url']
+            wallet_balance = get_usdc_balance(address)
+            print(f'{address} balance: {wallet_balance}')
+            if wallet_balance >= amount:
+                update_payment_status(id, 'paid')
+                payment['validated_at'] = int(time.time())
+                webhook.send_webhook_async(webhook_url, payment)
+                print('payment validated')
         
 def get_usdc_balance(address: str) -> float:
     ERC20_ABI = [
