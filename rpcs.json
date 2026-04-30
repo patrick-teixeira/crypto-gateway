@@ -1,0 +1,5 @@
+{
+    "ronin": "https://api.roninchain.com/rpc",
+    "ethereum": "https://eth.drpc.org",
+    "polygon": "https://polygon.drpc.org"
+}

@@ -1,0 +1,12 @@
+{
+  "ronin": {
+    "usdc": "0x0b7007c13325c48911f73a2dad5fa5dcbf808adc"
+  },
+  "base": {
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "usdt": "0xfde4c96c8593536e31f229ea8f37b2ada2699bb2"
+  },
+  "bsc": {
+    "usdt": "0x55d398326f99059ff775485246999027b3197955"
+  }
+}
