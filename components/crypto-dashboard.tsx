@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import {
   ArrowDownRight,
   Bell,
@@ -11,7 +12,6 @@ import {
   Settings,
   Wallet,
   ArrowRightLeft,
-  TrendingUp,
   RefreshCw,
 } from "lucide-react"
 import { Area, AreaChart, XAxis, YAxis, Bar, BarChart, CartesianGrid } from "recharts"
@@ -272,10 +272,17 @@ export function CryptoDashboard({
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r border-border bg-sidebar p-4 lg:flex">
         <div className="mb-8 flex items-center gap-2 px-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
-            <TrendingUp className="h-4 w-4 text-accent-foreground" />
+          <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-sidebar-accent">
+            <Image
+              src="/icons/logo.png"
+              alt="CryptoGateway"
+              fill
+              sizes="32px"
+              className="object-contain"
+              priority
+            />
           </div>
-          <span className="text-lg font-semibold text-sidebar-foreground">CryptoVault</span>
+          <span className="text-lg font-semibold text-sidebar-foreground">CryptoGateway</span>
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           <NavItem icon={Home} label="Dashboard" active={currentView === "dashboard"} onClick={onOpenDashboard} />
