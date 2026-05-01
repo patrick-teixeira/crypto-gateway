@@ -239,141 +239,204 @@ export function LandingPage() {
             </div>
 
             <div className="relative">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-transparent to-primary/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
-              <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl dark:border-primary/20">
-                {/* Dashboard Preview - Simulated UI */}
-                <div className="flex h-[420px]">
-                  {/* Mini Sidebar */}
-                  <div className="hidden w-14 flex-col border-r border-border bg-secondary/30 p-2 sm:flex">
-                    <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
-                      <div className="relative h-5 w-5 overflow-hidden rounded">
-                        <Image
-                          src="/icons/logo.png"
-                          alt="Logo"
-                          fill
-                          sizes="20px"
-                          className="object-contain"
-                        />
+              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#2dd4bf]/20 via-transparent to-[#2dd4bf]/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
+              <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0a0a0a] p-4 shadow-xl dark:border-[#2dd4bf]/20">
+                {/* Dashboard Preview - Matching Real Dashboard */}
+                <div className="space-y-3">
+                  {/* Top Section - Balance + Refresh */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-[10px] text-gray-500">Saldo Recebido Total</p>
+                      <p className="text-2xl font-bold text-white">$0,119</p>
+                    </div>
+                    <button className="flex items-center gap-1 rounded-lg border border-gray-700 px-2 py-1 text-[9px] text-gray-400">
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Atualizar
+                    </button>
+                  </div>
+
+                  {/* Token Pills */}
+                  <div className="flex flex-wrap gap-1.5">
+                    <div className="flex items-center gap-1.5 rounded-full border border-gray-700/50 bg-gray-900/50 px-2.5 py-1">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#2dd4bf]">
+                        <span className="text-[8px] font-bold text-black">$</span>
+                      </div>
+                      <span className="text-[9px] text-white">0,115 USDC</span>
+                      <span className="text-[8px] text-gray-500">Ronin</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full border border-gray-700/50 bg-gray-900/50 px-2.5 py-1">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#2dd4bf]">
+                        <span className="text-[8px] font-bold text-black">$</span>
+                      </div>
+                      <span className="text-[9px] text-white">0,003 USDC</span>
+                      <span className="text-[8px] text-gray-500">Base</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full border border-gray-700/50 bg-gray-900/50 px-2.5 py-1">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#26a17b]">
+                        <span className="text-[8px] font-bold text-white">T</span>
+                      </div>
+                      <span className="text-[9px] text-white">0,001 USDT</span>
+                      <span className="text-[8px] text-gray-500">Bsc</span>
+                    </div>
+                  </div>
+
+                  {/* Main Grid - Chart + Weekly */}
+                  <div className="grid grid-cols-5 gap-2">
+                    {/* Recebimentos Chart Card */}
+                    <div className="col-span-3 rounded-xl border border-gray-800 bg-[#111111] p-3">
+                      <div className="mb-1 flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] font-medium text-white">Recebimentos</p>
+                          <p className="text-[8px] text-gray-500">{"últimos 12 meses · 0,119"}</p>
+                        </div>
+                        <div className="flex gap-0.5 text-[7px]">
+                          {["1S", "1M", "3M", "1A", "Todos"].map((t, i) => (
+                            <span
+                              key={t}
+                              className={`rounded px-1 py-0.5 ${
+                                t === "1A" ? "bg-gray-700 text-white" : "text-gray-500"
+                              }`}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Area Chart with months */}
+                      <div className="relative h-20">
+                        {/* Y-axis labels */}
+                        <div className="absolute left-0 top-0 flex h-full flex-col justify-between text-[6px] text-gray-600">
+                          <span>0.12</span>
+                          <span>0.09</span>
+                          <span>0.06</span>
+                          <span>0.03</span>
+                          <span>0</span>
+                        </div>
+                        <div className="ml-5 h-full">
+                          <svg className="h-full w-full" viewBox="0 0 200 50" preserveAspectRatio="none">
+                            <defs>
+                              <linearGradient id="previewChartGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.4" />
+                                <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0" />
+                              </linearGradient>
+                            </defs>
+                            {/* Grid lines */}
+                            <line x1="0" y1="10" x2="200" y2="10" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1="0" y1="20" x2="200" y2="20" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1="0" y1="40" x2="200" y2="40" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            {/* Area fill */}
+                            <path
+                              d="M0,50 L0,50 L20,50 L40,50 L60,50 L80,50 L100,50 L120,50 L140,45 L160,15 L180,35 L200,50 L200,50 L0,50 Z"
+                              fill="url(#previewChartGradient)"
+                            />
+                            {/* Line */}
+                            <path
+                              d="M0,50 L20,50 L40,50 L60,50 L80,50 L100,50 L120,50 L140,45 L160,15 L180,35 L200,50"
+                              fill="none"
+                              stroke="#2dd4bf"
+                              strokeWidth="1.5"
+                            />
+                          </svg>
+                        </div>
+                        {/* X-axis months */}
+                        <div className="ml-5 mt-1 flex justify-between text-[5px] text-gray-600">
+                          <span>jun</span>
+                          <span>jul</span>
+                          <span>ago</span>
+                          <span>set</span>
+                          <span>out</span>
+                          <span>nov</span>
+                          <span>dez</span>
+                          <span>jan</span>
+                          <span>fev</span>
+                          <span>mar</span>
+                          <span>abr</span>
+                          <span>mai</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <div className="h-3.5 w-3.5 rounded-sm bg-current opacity-80" />
-                      </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary/50">
-                        <Wallet className="h-3.5 w-3.5" />
-                      </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary/50">
-                        <BarChart3 className="h-3.5 w-3.5" />
+
+                    {/* Últimos 7 dias Card */}
+                    <div className="col-span-2 rounded-xl border border-gray-800 bg-[#111111] p-3">
+                      <p className="text-[10px] font-medium text-white">Últimos 7 dias</p>
+                      <p className="text-lg font-bold text-white">0,11</p>
+                      <p className="text-[7px] text-gray-500">Total recebido na semana</p>
+                      {/* Bar chart */}
+                      <div className="mt-2 flex h-12 items-end justify-between gap-1">
+                        <div className="flex flex-1 flex-col items-center gap-1">
+                          <div className="h-1 w-full rounded-sm bg-gray-700" />
+                          <span className="text-[5px] text-gray-600">28/04</span>
+                        </div>
+                        <div className="flex flex-1 flex-col items-center gap-1">
+                          <div className="h-1 w-full rounded-sm bg-gray-700" />
+                          <span className="text-[5px] text-gray-600">29/04</span>
+                        </div>
+                        <div className="flex flex-1 flex-col items-center gap-1">
+                          <div className="h-8 w-full rounded-sm bg-[#2dd4bf]" />
+                          <span className="text-[5px] text-gray-600">30/04</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Main Content */}
-                  <div className="flex-1 overflow-hidden">
-                    {/* Mini Header */}
-                    <div className="flex items-center justify-between border-b border-border bg-background/50 px-4 py-2">
-                      <div className="flex h-6 w-28 items-center rounded-md bg-secondary/50 px-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-                        <span className="ml-1.5 text-[9px] text-muted-foreground">Buscar...</span>
+                  {/* Bottom Grid - Assets + Transactions */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Meus Ativos Card */}
+                    <div className="rounded-xl border border-gray-800 bg-[#111111] p-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-[10px] font-medium text-white">Meus Ativos</p>
+                        <span className="text-[8px] text-gray-500">{"Ver todos >"}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="h-5 w-5 rounded-full bg-secondary/50" />
-                        <div className="h-5 w-5 rounded-full bg-secondary/50" />
+                      <div className="space-y-2">
+                        {[
+                          { token: "USDC", network: "Ronin", address: "0x0b7007...808adc", amount: "0,115" },
+                          { token: "USDC", network: "Base", address: "0x833589...A02913", amount: "0,003" },
+                          { token: "USDT", network: "Bsc", address: "0x55d398...7d44f5", amount: "0,001" },
+                        ].map((asset, i) => (
+                          <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className={`flex h-5 w-5 items-center justify-center rounded-full ${asset.token === "USDT" ? "bg-[#26a17b]" : "bg-[#2dd4bf]"}`}>
+                                <span className="text-[7px] font-bold text-black">{asset.token === "USDT" ? "T" : "$"}</span>
+                              </div>
+                              <div>
+                                <p className="text-[9px] font-medium text-white">{asset.token}</p>
+                                <p className="text-[7px] text-gray-500">{asset.network} · {asset.address}</p>
+                              </div>
+                            </div>
+                            <p className="text-[9px] text-white">{asset.amount}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    {/* Dashboard Content */}
-                    <div className="p-4">
-                      {/* Balance Section */}
-                      <div className="mb-4">
-                        <p className="text-[10px] text-muted-foreground">Saldo Recebido Total</p>
-                        <p className="text-xl font-bold text-foreground">$12,450.00</p>
-                        
-                        {/* Token Pills */}
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
-                            <div className="h-3.5 w-3.5 rounded-full bg-[#627eea]" />
-                            <span className="text-[9px] font-medium text-foreground">5,230.00 ETH</span>
-                          </div>
-                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
-                            <div className="h-3.5 w-3.5 rounded-full bg-[#26a17b]" />
-                            <span className="text-[9px] font-medium text-foreground">4,120.00 USDT</span>
-                          </div>
-                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
-                            <div className="h-3.5 w-3.5 rounded-full bg-[#2775ca]" />
-                            <span className="text-[9px] font-medium text-foreground">3,100.00 USDC</span>
-                          </div>
-                        </div>
+                    {/* Transações Recentes Card */}
+                    <div className="rounded-xl border border-gray-800 bg-[#111111] p-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-[10px] font-medium text-white">Transacoes Recentes</p>
+                        <span className="text-[8px] text-gray-500">...</span>
                       </div>
-
-                      {/* Chart Card */}
-                      <div className="rounded-xl border border-border bg-card p-3">
-                        <div className="mb-2 flex items-center justify-between">
-                          <div>
-                            <p className="text-[10px] font-medium text-foreground">Recebimentos</p>
-                            <p className="text-[8px] text-muted-foreground">últimos 12 meses</p>
-                          </div>
-                          <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
-                            {["1S", "1M", "1A"].map((t, i) => (
-                              <span
-                                key={t}
-                                className={`rounded px-1.5 py-0.5 text-[8px] ${
-                                  i === 2 ? "bg-background text-foreground" : "text-muted-foreground"
-                                }`}
-                              >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Simulated Area Chart */}
-                        <div className="relative h-24">
-                          <svg className="h-full w-full" viewBox="0 0 200 60" preserveAspectRatio="none">
-                            <defs>
-                              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" className="[stop-color:var(--chart-1)]" stopOpacity="0.3" />
-                                <stop offset="100%" className="[stop-color:var(--chart-1)]" stopOpacity="0" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              d="M0,45 Q20,40 40,35 T80,25 T120,30 T160,15 T200,20 L200,60 L0,60 Z"
-                              fill="url(#chartGradient)"
-                            />
-                            <path
-                              d="M0,45 Q20,40 40,35 T80,25 T120,30 T160,15 T200,20"
-                              fill="none"
-                              className="stroke-primary"
-                              strokeWidth="2"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Recent Payments */}
-                      <div className="mt-3">
-                        <p className="mb-2 text-[10px] font-medium text-foreground">Pagamentos Recentes</p>
-                        <div className="space-y-1.5">
-                          {[
-                            { token: "ETH", amount: "0.25", usd: "450.00", time: "2 min" },
-                            { token: "USDT", amount: "150.00", usd: "150.00", time: "15 min" },
-                            { token: "USDC", amount: "320.00", usd: "320.00", time: "1h" },
-                          ].map((payment, i) => (
-                            <div key={i} className="flex items-center justify-between rounded-lg bg-secondary/30 px-2 py-1.5">
-                              <div className="flex items-center gap-2">
-                                <div className={`h-5 w-5 rounded-full ${
-                                  payment.token === "ETH" ? "bg-[#627eea]" :
-                                  payment.token === "USDT" ? "bg-[#26a17b]" : "bg-[#2775ca]"
-                                }`} />
-                                <div>
-                                  <p className="text-[9px] font-medium text-foreground">{payment.amount} {payment.token}</p>
-                                  <p className="text-[8px] text-muted-foreground">há {payment.time}</p>
-                                </div>
+                      <div className="space-y-2">
+                        {[
+                          { amount: "+0,001 USDC", time: "30/04, 12:12" },
+                          { amount: "+0,10 USDC", time: "30/04, 11:45" },
+                          { amount: "+0,001 USDC", time: "30/04, 11:44" },
+                        ].map((tx, i) => (
+                          <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2dd4bf]">
+                                <span className="text-[7px] font-bold text-black">$</span>
                               </div>
-                              <p className="text-[9px] font-semibold text-green-500">+${payment.usd}</p>
+                              <div>
+                                <p className="text-[9px] font-medium text-white">Recebido · USDC</p>
+                                <p className="text-[7px] text-gray-500">Ronin · {tx.time}</p>
+                              </div>
                             </div>
-                          ))}
-                        </div>
+                            <p className="text-[9px] text-white">{tx.amount}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
