@@ -240,16 +240,16 @@ export function LandingPage() {
 
             <div className="relative">
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#2dd4bf]/20 via-transparent to-[#2dd4bf]/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
-              <div className="relative overflow-hidden rounded-2xl border border-border bg-[#0a0a0a] p-4 shadow-xl dark:border-[#2dd4bf]/20">
+              <div className="relative overflow-hidden rounded-2xl border border-gray-800 bg-[#0a0a0a] p-4 shadow-xl dark:border-[#2dd4bf]/20">
                 {/* Dashboard Preview - Matching Real Dashboard */}
                 <div className="space-y-3">
                   {/* Top Section - Balance + Refresh */}
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-[10px] text-gray-500">Saldo Recebido Total</p>
-                      <p className="text-2xl font-bold text-white">$0,119</p>
+                      <p className="text-2xl font-bold text-white">$1.000,00</p>
                     </div>
-                    <button className="flex items-center gap-1 rounded-lg border border-gray-700 px-2 py-1 text-[9px] text-gray-400">
+                    <button className="flex items-center gap-1.5 rounded-lg border border-gray-700 px-2.5 py-1.5 text-[9px] text-gray-400 transition-colors hover:border-gray-600 hover:text-gray-300">
                       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
@@ -263,21 +263,21 @@ export function LandingPage() {
                       <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#2dd4bf]">
                         <span className="text-[8px] font-bold text-black">$</span>
                       </div>
-                      <span className="text-[9px] text-white">0,115 USDC</span>
+                      <span className="text-[9px] text-white">520,00 USDC</span>
                       <span className="text-[8px] text-gray-500">Ronin</span>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-gray-700/50 bg-gray-900/50 px-2.5 py-1">
                       <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#2dd4bf]">
                         <span className="text-[8px] font-bold text-black">$</span>
                       </div>
-                      <span className="text-[9px] text-white">0,003 USDC</span>
+                      <span className="text-[9px] text-white">280,00 USDC</span>
                       <span className="text-[8px] text-gray-500">Base</span>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-gray-700/50 bg-gray-900/50 px-2.5 py-1">
                       <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#26a17b]">
                         <span className="text-[8px] font-bold text-white">T</span>
                       </div>
-                      <span className="text-[9px] text-white">0,001 USDT</span>
+                      <span className="text-[9px] text-white">200,00 USDT</span>
                       <span className="text-[8px] text-gray-500">Bsc</span>
                     </div>
                   </div>
@@ -289,10 +289,10 @@ export function LandingPage() {
                       <div className="mb-1 flex items-center justify-between">
                         <div>
                           <p className="text-[10px] font-medium text-white">Recebimentos</p>
-                          <p className="text-[8px] text-gray-500">{"últimos 12 meses · 0,119"}</p>
+                          <p className="text-[8px] text-gray-500">{"últimos 12 meses · $1.000,00"}</p>
                         </div>
                         <div className="flex gap-0.5 text-[7px]">
-                          {["1S", "1M", "3M", "1A", "Todos"].map((t, i) => (
+                          {["1S", "1M", "3M", "1A", "Todos"].map((t) => (
                             <span
                               key={t}
                               className={`rounded px-1 py-0.5 ${
@@ -308,14 +308,14 @@ export function LandingPage() {
                       <div className="relative h-20">
                         {/* Y-axis labels */}
                         <div className="absolute left-0 top-0 flex h-full flex-col justify-between text-[6px] text-gray-600">
-                          <span>0.12</span>
-                          <span>0.09</span>
-                          <span>0.06</span>
-                          <span>0.03</span>
+                          <span>200</span>
+                          <span>150</span>
+                          <span>100</span>
+                          <span>50</span>
                           <span>0</span>
                         </div>
                         <div className="ml-5 h-full">
-                          <svg className="h-full w-full" viewBox="0 0 200 50" preserveAspectRatio="none">
+                          <svg className="h-full w-full" viewBox="0 0 220 50" preserveAspectRatio="none">
                             <defs>
                               <linearGradient id="previewChartGradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.4" />
@@ -323,22 +323,25 @@ export function LandingPage() {
                               </linearGradient>
                             </defs>
                             {/* Grid lines */}
-                            <line x1="0" y1="10" x2="200" y2="10" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
-                            <line x1="0" y1="20" x2="200" y2="20" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
-                            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
-                            <line x1="0" y1="40" x2="200" y2="40" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
-                            {/* Area fill */}
+                            <line x1="0" y1="12.5" x2="220" y2="12.5" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1="0" y1="25" x2="220" y2="25" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1="0" y1="37.5" x2="220" y2="37.5" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
+                            {/* Area fill - smooth curve with distributed values */}
                             <path
-                              d="M0,50 L0,50 L20,50 L40,50 L60,50 L80,50 L100,50 L120,50 L140,45 L160,15 L180,35 L200,50 L200,50 L0,50 Z"
+                              d="M0,42 C10,40 15,38 20,35 C30,30 35,32 40,28 C50,22 55,25 60,20 C70,15 75,18 80,22 C90,28 95,25 100,18 C110,10 115,8 120,12 C130,18 135,15 140,10 C150,5 155,8 165,15 C175,22 180,20 190,25 C200,30 210,28 220,32 L220,50 L0,50 Z"
                               fill="url(#previewChartGradient)"
                             />
                             {/* Line */}
                             <path
-                              d="M0,50 L20,50 L40,50 L60,50 L80,50 L100,50 L120,50 L140,45 L160,15 L180,35 L200,50"
+                              d="M0,42 C10,40 15,38 20,35 C30,30 35,32 40,28 C50,22 55,25 60,20 C70,15 75,18 80,22 C90,28 95,25 100,18 C110,10 115,8 120,12 C130,18 135,15 140,10 C150,5 155,8 165,15 C175,22 180,20 190,25 C200,30 210,28 220,32"
                               fill="none"
                               stroke="#2dd4bf"
                               strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
+                            {/* Dot on peak */}
+                            <circle cx="140" cy="10" r="2" fill="#2dd4bf" />
                           </svg>
                         </div>
                         {/* X-axis months */}
@@ -362,22 +365,27 @@ export function LandingPage() {
                     {/* Últimos 7 dias Card */}
                     <div className="col-span-2 rounded-xl border border-gray-800 bg-[#111111] p-3">
                       <p className="text-[10px] font-medium text-white">Últimos 7 dias</p>
-                      <p className="text-lg font-bold text-white">0,11</p>
+                      <p className="text-lg font-bold text-white">$185,00</p>
                       <p className="text-[7px] text-gray-500">Total recebido na semana</p>
-                      {/* Bar chart */}
-                      <div className="mt-2 flex h-12 items-end justify-between gap-1">
-                        <div className="flex flex-1 flex-col items-center gap-1">
-                          <div className="h-1 w-full rounded-sm bg-gray-700" />
-                          <span className="text-[5px] text-gray-600">28/04</span>
-                        </div>
-                        <div className="flex flex-1 flex-col items-center gap-1">
-                          <div className="h-1 w-full rounded-sm bg-gray-700" />
-                          <span className="text-[5px] text-gray-600">29/04</span>
-                        </div>
-                        <div className="flex flex-1 flex-col items-center gap-1">
-                          <div className="h-8 w-full rounded-sm bg-[#2dd4bf]" />
-                          <span className="text-[5px] text-gray-600">30/04</span>
-                        </div>
+                      {/* Bar chart - 7 days */}
+                      <div className="mt-2 flex h-12 items-end justify-between gap-0.5">
+                        {[
+                          { h: 3, date: "25/04" },
+                          { h: 6, date: "26/04" },
+                          { h: 4, date: "27/04" },
+                          { h: 8, date: "28/04" },
+                          { h: 5, date: "29/04" },
+                          { h: 10, date: "30/04" },
+                          { h: 7, date: "01/05" },
+                        ].map((bar, i) => (
+                          <div key={i} className="flex flex-1 flex-col items-center gap-0.5">
+                            <div 
+                              className={`w-full rounded-sm ${bar.h > 7 ? "bg-[#2dd4bf]" : "bg-[#2dd4bf]/60"}`}
+                              style={{ height: `${bar.h * 3.5}px` }}
+                            />
+                            <span className="text-[4px] text-gray-600">{bar.date}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -388,18 +396,18 @@ export function LandingPage() {
                     <div className="rounded-xl border border-gray-800 bg-[#111111] p-3">
                       <div className="mb-2 flex items-center justify-between">
                         <p className="text-[10px] font-medium text-white">Meus Ativos</p>
-                        <span className="text-[8px] text-gray-500">{"Ver todos >"}</span>
+                        <span className="flex items-center gap-0.5 text-[8px] text-gray-500">Ver todos <ChevronRight className="h-2 w-2" /></span>
                       </div>
                       <div className="space-y-2">
                         {[
-                          { token: "USDC", network: "Ronin", address: "0x0b7007...808adc", amount: "0,115" },
-                          { token: "USDC", network: "Base", address: "0x833589...A02913", amount: "0,003" },
-                          { token: "USDT", network: "Bsc", address: "0x55d398...7d44f5", amount: "0,001" },
+                          { token: "USDC", network: "Ronin", address: "0x0b7007...808adc", amount: "520,00" },
+                          { token: "USDC", network: "Base", address: "0x833589...A02913", amount: "280,00" },
+                          { token: "USDT", network: "Bsc", address: "0x55d398...7d44f5", amount: "200,00" },
                         ].map((asset, i) => (
                           <div key={i} className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <div className={`flex h-5 w-5 items-center justify-center rounded-full ${asset.token === "USDT" ? "bg-[#26a17b]" : "bg-[#2dd4bf]"}`}>
-                                <span className="text-[7px] font-bold text-black">{asset.token === "USDT" ? "T" : "$"}</span>
+                                <span className={`text-[7px] font-bold ${asset.token === "USDT" ? "text-white" : "text-black"}`}>{asset.token === "USDT" ? "T" : "$"}</span>
                               </div>
                               <div>
                                 <p className="text-[9px] font-medium text-white">{asset.token}</p>
@@ -416,25 +424,25 @@ export function LandingPage() {
                     <div className="rounded-xl border border-gray-800 bg-[#111111] p-3">
                       <div className="mb-2 flex items-center justify-between">
                         <p className="text-[10px] font-medium text-white">Transacoes Recentes</p>
-                        <span className="text-[8px] text-gray-500">...</span>
+                        <span className="text-[10px] text-gray-500">...</span>
                       </div>
                       <div className="space-y-2">
                         {[
-                          { amount: "+0,001 USDC", time: "30/04, 12:12" },
-                          { amount: "+0,10 USDC", time: "30/04, 11:45" },
-                          { amount: "+0,001 USDC", time: "30/04, 11:44" },
+                          { token: "USDC", amount: "+45,00", time: "01/05, 14:32", network: "Ronin" },
+                          { token: "USDT", amount: "+120,00", time: "30/04, 11:45", network: "Bsc" },
+                          { token: "USDC", amount: "+85,00", time: "29/04, 09:20", network: "Base" },
                         ].map((tx, i) => (
                           <div key={i} className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2dd4bf]">
-                                <span className="text-[7px] font-bold text-black">$</span>
+                              <div className={`flex h-5 w-5 items-center justify-center rounded-full ${tx.token === "USDT" ? "bg-[#26a17b]" : "bg-[#2dd4bf]"}`}>
+                                <span className={`text-[7px] font-bold ${tx.token === "USDT" ? "text-white" : "text-black"}`}>{tx.token === "USDT" ? "T" : "$"}</span>
                               </div>
                               <div>
-                                <p className="text-[9px] font-medium text-white">Recebido · USDC</p>
-                                <p className="text-[7px] text-gray-500">Ronin · {tx.time}</p>
+                                <p className="text-[9px] font-medium text-white">Recebido · {tx.token}</p>
+                                <p className="text-[7px] text-gray-500">{tx.network} · {tx.time}</p>
                               </div>
                             </div>
-                            <p className="text-[9px] text-white">{tx.amount}</p>
+                            <p className="text-[9px] font-medium text-[#2dd4bf]">{tx.amount}</p>
                           </div>
                         ))}
                       </div>
