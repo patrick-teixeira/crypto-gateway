@@ -128,7 +128,8 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.15),transparent)]" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.1),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(56,189,248,0.15),transparent)]" />
+        <div className="absolute inset-0 -z-10 dark:bg-[radial-gradient(ellipse_50%_80%_at_80%_50%,rgba(14,165,233,0.08),transparent)]" />
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-sm text-muted-foreground">
@@ -197,7 +198,7 @@ export function LandingPage() {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="group relative rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
+                className="group relative rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg dark:hover:shadow-primary/5"
               >
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <feature.icon className="h-6 w-6" />
@@ -238,7 +239,8 @@ export function LandingPage() {
             </div>
 
             <div className="relative">
-              <div className="aspect-square overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xl">
+              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-transparent to-primary/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xl dark:border-primary/20">
                 <div className="flex h-full flex-col">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="relative h-10 w-10 overflow-hidden rounded-lg">
@@ -298,7 +300,7 @@ export function LandingPage() {
       {/* CTA Section */}
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center sm:px-16 sm:py-24">
+          <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center sm:px-16 sm:py-24 dark:shadow-[0_0_60px_-15px] dark:shadow-primary/30">
             <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl text-balance">
               Pronto para aceitar pagamentos em cripto?
             </h2>
