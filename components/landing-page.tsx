@@ -240,54 +240,141 @@ export function LandingPage() {
 
             <div className="relative">
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-transparent to-primary/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
-              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-xl dark:border-primary/20">
-                <div className="flex h-full flex-col">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-                      <Image
-                        src="/icons/logo.png"
-                        alt="CryptoGateway Dashboard"
-                        fill
-                        sizes="40px"
-                        className="object-contain"
-                      />
+              <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl dark:border-primary/20">
+                {/* Dashboard Preview - Simulated UI */}
+                <div className="flex h-[420px]">
+                  {/* Mini Sidebar */}
+                  <div className="hidden w-14 flex-col border-r border-border bg-secondary/30 p-2 sm:flex">
+                    <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+                      <div className="relative h-5 w-5 overflow-hidden rounded">
+                        <Image
+                          src="/icons/logo.png"
+                          alt="Logo"
+                          fill
+                          sizes="20px"
+                          className="object-contain"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Dashboard</p>
-                      <p className="text-xs text-muted-foreground">Visão geral</p>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="h-3.5 w-3.5 rounded-sm bg-current opacity-80" />
+                      </div>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary/50">
+                        <Wallet className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary/50">
+                        <BarChart3 className="h-3.5 w-3.5" />
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex-1 space-y-4">
-                    <div className="rounded-xl bg-secondary/50 p-4">
-                      <p className="text-xs text-muted-foreground">Saldo Total</p>
-                      <p className="mt-1 text-2xl font-bold text-foreground">$12,450.00</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-lg bg-secondary/50 p-3">
-                        <p className="text-xs text-muted-foreground">Hoje</p>
-                        <p className="mt-1 font-semibold text-foreground">$1,234</p>
+
+                  {/* Main Content */}
+                  <div className="flex-1 overflow-hidden">
+                    {/* Mini Header */}
+                    <div className="flex items-center justify-between border-b border-border bg-background/50 px-4 py-2">
+                      <div className="flex h-6 w-28 items-center rounded-md bg-secondary/50 px-2">
+                        <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+                        <span className="ml-1.5 text-[9px] text-muted-foreground">Buscar...</span>
                       </div>
-                      <div className="rounded-lg bg-secondary/50 p-3">
-                        <p className="text-xs text-muted-foreground">Este mês</p>
-                        <p className="mt-1 font-semibold text-foreground">$8,567</p>
+                      <div className="flex items-center gap-2">
+                        <div className="h-5 w-5 rounded-full bg-secondary/50" />
+                        <div className="h-5 w-5 rounded-full bg-secondary/50" />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-center justify-between rounded-lg bg-secondary/30 p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-primary/20" />
-                            <div>
-                              <p className="text-sm font-medium text-foreground">Pagamento #{i}</p>
-                              <p className="text-xs text-muted-foreground">há 2 min</p>
-                            </div>
+                    {/* Dashboard Content */}
+                    <div className="p-4">
+                      {/* Balance Section */}
+                      <div className="mb-4">
+                        <p className="text-[10px] text-muted-foreground">Saldo Recebido Total</p>
+                        <p className="text-xl font-bold text-foreground">$12,450.00</p>
+                        
+                        {/* Token Pills */}
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
+                            <div className="h-3.5 w-3.5 rounded-full bg-[#627eea]" />
+                            <span className="text-[9px] font-medium text-foreground">5,230.00 ETH</span>
                           </div>
-                          <p className="text-sm font-semibold text-green-600">+$150</p>
+                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
+                            <div className="h-3.5 w-3.5 rounded-full bg-[#26a17b]" />
+                            <span className="text-[9px] font-medium text-foreground">4,120.00 USDT</span>
+                          </div>
+                          <div className="flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-0.5">
+                            <div className="h-3.5 w-3.5 rounded-full bg-[#2775ca]" />
+                            <span className="text-[9px] font-medium text-foreground">3,100.00 USDC</span>
+                          </div>
                         </div>
-                      ))}
+                      </div>
+
+                      {/* Chart Card */}
+                      <div className="rounded-xl border border-border bg-card p-3">
+                        <div className="mb-2 flex items-center justify-between">
+                          <div>
+                            <p className="text-[10px] font-medium text-foreground">Recebimentos</p>
+                            <p className="text-[8px] text-muted-foreground">últimos 12 meses</p>
+                          </div>
+                          <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
+                            {["1S", "1M", "1A"].map((t, i) => (
+                              <span
+                                key={t}
+                                className={`rounded px-1.5 py-0.5 text-[8px] ${
+                                  i === 2 ? "bg-background text-foreground" : "text-muted-foreground"
+                                }`}
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Simulated Area Chart */}
+                        <div className="relative h-24">
+                          <svg className="h-full w-full" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <defs>
+                              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" className="[stop-color:var(--chart-1)]" stopOpacity="0.3" />
+                                <stop offset="100%" className="[stop-color:var(--chart-1)]" stopOpacity="0" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              d="M0,45 Q20,40 40,35 T80,25 T120,30 T160,15 T200,20 L200,60 L0,60 Z"
+                              fill="url(#chartGradient)"
+                            />
+                            <path
+                              d="M0,45 Q20,40 40,35 T80,25 T120,30 T160,15 T200,20"
+                              fill="none"
+                              className="stroke-primary"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+
+                      {/* Recent Payments */}
+                      <div className="mt-3">
+                        <p className="mb-2 text-[10px] font-medium text-foreground">Pagamentos Recentes</p>
+                        <div className="space-y-1.5">
+                          {[
+                            { token: "ETH", amount: "0.25", usd: "450.00", time: "2 min" },
+                            { token: "USDT", amount: "150.00", usd: "150.00", time: "15 min" },
+                            { token: "USDC", amount: "320.00", usd: "320.00", time: "1h" },
+                          ].map((payment, i) => (
+                            <div key={i} className="flex items-center justify-between rounded-lg bg-secondary/30 px-2 py-1.5">
+                              <div className="flex items-center gap-2">
+                                <div className={`h-5 w-5 rounded-full ${
+                                  payment.token === "ETH" ? "bg-[#627eea]" :
+                                  payment.token === "USDT" ? "bg-[#26a17b]" : "bg-[#2775ca]"
+                                }`} />
+                                <div>
+                                  <p className="text-[9px] font-medium text-foreground">{payment.amount} {payment.token}</p>
+                                  <p className="text-[8px] text-muted-foreground">há {payment.time}</p>
+                                </div>
+                              </div>
+                              <p className="text-[9px] font-semibold text-green-500">+${payment.usd}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
