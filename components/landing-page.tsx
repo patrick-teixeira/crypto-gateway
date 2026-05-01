@@ -2,8 +2,10 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Shield, Zap, Globe, Wallet, BarChart3, Lock, ChevronRight } from "lucide-react"
+import { ArrowRight, Shield, Zap, Globe, Wallet, BarChart3, Lock, ChevronRight, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 const features = [
   {
@@ -49,6 +51,17 @@ const benefits = [
 ]
 
 export function LandingPage() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
@@ -81,6 +94,23 @@ export function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-9 w-9"
+              aria-label="Alternar tema"
+            >
+              {mounted ? (
+                resolvedTheme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )
+              ) : (
+                <div className="h-4 w-4" />
+              )}
+            </Button>
             <Link href="/login">
               <Button variant="ghost" className="hidden sm:inline-flex">
                 Entrar
