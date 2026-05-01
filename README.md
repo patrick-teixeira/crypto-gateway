@@ -26,22 +26,10 @@ Rode o frontend:
 npm run dev
 ```
 
-Rode a API em outro terminal:
+Rode a API e os workers em outro terminal:
 
 ```bash
-node app.js
-```
-
-Rode o validador de pagamentos:
-
-```bash
-node workers/paymentValidator.js
-```
-
-Rode o worker de saques:
-
-```bash
-node workers/withdrawalWorker.js
+npm run backend
 ```
 
 Por padrão:
