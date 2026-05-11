@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { apiUrl, getApiBaseUrl } from "@/lib/api-url"
+import { clearLegacyAuthStorage, setAuthToken } from "@/lib/auth-session"
 
 interface LoginFormProps {
   onAuthSuccess?: () => void
@@ -59,19 +60,17 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
         if (data.token) {
           const userSession = JSON.stringify(data.user ?? {})
           sessionStorage.setItem("auth_user", userSession)
+          setAuthToken(data.token, rememberMe)
           if (rememberMe) {
-            localStorage.setItem("auth_token", data.token)
             localStorage.setItem("auth_user", userSession)
-            sessionStorage.removeItem("auth_token")
           } else {
-            sessionStorage.setItem("auth_token", data.token)
             localStorage.removeItem("auth_user")
-            localStorage.removeItem("auth_token")
           }
         }
         setSuccessMessage("Login realizado com sucesso.")
         onAuthSuccess?.()
       } else {
+        clearLegacyAuthStorage()
         setSuccessMessage("Cadastro realizado com sucesso. Faça seu login.")
         setMode("login")
         setPassword("")

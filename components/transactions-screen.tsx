@@ -7,6 +7,7 @@ import { RefreshCw, ReceiptText } from "lucide-react"
 import { TokenIcon, getTokenMeta } from "@/components/token-icon"
 import { useSupportedTokens } from "@/hooks/use-supported-tokens"
 import { apiUrl } from "@/lib/api-url"
+import { getAuthToken } from "@/lib/auth-session"
 
 type Payment = {
   id: number
@@ -58,7 +59,7 @@ export function TransactionsScreen() {
   const { getTokenSymbol } = useSupportedTokens()
 
   async function loadPayments() {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token) throw new Error("invalid-session")
 
     const response = await fetch(apiUrl("/payments"), {
@@ -192,5 +193,4 @@ export function TransactionsScreen() {
     </div>
   )
 }
-
 

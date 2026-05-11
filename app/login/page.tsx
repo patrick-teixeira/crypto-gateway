@@ -3,23 +3,22 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { LoginForm } from "@/components/login-form"
+import { clearLegacyAuthStorage, clearLegacyAuthTokenStorage, getAuthToken } from "@/lib/auth-session"
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if already authenticated
-    const localToken = localStorage.getItem("auth_token")
-    const sessionToken = sessionStorage.getItem("auth_token")
-    const localUser = localStorage.getItem("auth_user")
-    const sessionUser = sessionStorage.getItem("auth_user")
-    const hasSession = Boolean(localToken || sessionToken) && Boolean(localUser || sessionUser)
+    const hasSession = Boolean(getAuthToken())
 
     if (hasSession) {
+      clearLegacyAuthTokenStorage()
       router.replace("/home")
     } else {
-      setIsLoading(false)
+      clearLegacyAuthStorage()
+      const timeout = window.setTimeout(() => setIsLoading(false), 0)
+      return () => window.clearTimeout(timeout)
     }
   }, [router])
 

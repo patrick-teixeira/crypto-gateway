@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TokenIcon, getTokenMeta } from "@/components/token-icon"
 import { useSupportedTokens } from "@/hooks/use-supported-tokens"
 import { apiUrl } from "@/lib/api-url"
+import { getAuthToken } from "@/lib/auth-session"
 
 type DepositWallet = {
   id: number
@@ -125,7 +126,7 @@ export function WalletsScreen() {
   const { getTokenSymbol } = useSupportedTokens()
 
   async function loadWallets() {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token) throw new Error("invalid-session")
 
     const response = await fetch(apiUrl("/wallets"), {
@@ -167,7 +168,7 @@ export function WalletsScreen() {
   }
 
   async function createWithdrawal() {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token || !withdrawWallet) return
 
     setIsCreatingWithdrawal(true)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { type CSSProperties, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import {
   ArrowDownRight,
@@ -35,6 +35,7 @@ import { WalletsScreen } from "@/components/wallets-screen"
 import { TokenIcon, getTokenMeta } from "@/components/token-icon"
 import { useSupportedTokens } from "@/hooks/use-supported-tokens"
 import { apiUrl } from "@/lib/api-url"
+import { getAuthToken } from "@/lib/auth-session"
 
 const EMPTY_SERIES = [{ date: "Sem dados", value: 0 }]
 
@@ -56,6 +57,40 @@ const chartConfig = {
   value: { label: "Recebido", color: "var(--chart-1)" },
   total: { label: "Volume", color: "var(--chart-2)" },
 }
+
+const dashboardDarkThemeVars = {
+  "--background": "oklch(0.1 0.005 247)",
+  "--foreground": "oklch(0.985 0.002 247)",
+  "--card": "oklch(0.145 0.005 247)",
+  "--card-foreground": "oklch(0.985 0.002 247)",
+  "--popover": "oklch(0.145 0.005 247)",
+  "--popover-foreground": "oklch(0.985 0.002 247)",
+  "--primary": "oklch(0.985 0.002 247)",
+  "--primary-foreground": "oklch(0.1 0.005 247)",
+  "--secondary": "oklch(0.2 0.005 247)",
+  "--secondary-foreground": "oklch(0.985 0.002 247)",
+  "--muted": "oklch(0.2 0.005 247)",
+  "--muted-foreground": "oklch(0.65 0.005 247)",
+  "--accent": "oklch(0.2 0.005 247)",
+  "--accent-foreground": "oklch(0.985 0.002 247)",
+  "--destructive": "oklch(0.704 0.191 22.216)",
+  "--border": "oklch(0.25 0.005 247)",
+  "--input": "oklch(0.2 0.005 247)",
+  "--ring": "oklch(0.985 0.002 247)",
+  "--chart-1": "oklch(0.7 0.15 200)",
+  "--chart-2": "oklch(0.6 0.12 180)",
+  "--chart-3": "oklch(0.5 0.1 160)",
+  "--chart-4": "oklch(0.4 0.08 140)",
+  "--chart-5": "oklch(0.3 0.06 120)",
+  "--sidebar": "oklch(0.145 0.005 247)",
+  "--sidebar-foreground": "oklch(0.985 0.002 247)",
+  "--sidebar-primary": "oklch(0.985 0.002 247)",
+  "--sidebar-primary-foreground": "oklch(0.1 0.005 247)",
+  "--sidebar-accent": "oklch(0.2 0.005 247)",
+  "--sidebar-accent-foreground": "oklch(0.985 0.002 247)",
+  "--sidebar-border": "oklch(0.25 0.005 247)",
+  "--sidebar-ring": "oklch(0.985 0.002 247)",
+} as CSSProperties
 
 type Balance = { token: string; chain: string; amount: number }
 type Payment = { id: number; amount: number; chain: string; token: string; status: string; created_at: number }
@@ -201,7 +236,7 @@ export function CryptoDashboard({
   }
 
   async function markNotificationsAsRead() {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token || unreadNotifications === 0) return
     await fetch(apiUrl("/notifications/read"), {
       method: "POST",
@@ -216,7 +251,7 @@ export function CryptoDashboard({
   }
 
   async function fetchData(refresh = false, range = timeRange) {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token) { setIsLoadingBalances(false); return }
     if (refresh) setIsRefreshingBalances(true)
     try {
@@ -268,7 +303,7 @@ export function CryptoDashboard({
   const periodReceived = revenueData.reduce((acc, point) => acc + Number(point.value), 0)
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background" style={dashboardDarkThemeVars}>
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r border-border bg-sidebar p-4 lg:flex">
         <div className="mb-8 flex items-center gap-2 px-2">
@@ -457,12 +492,6 @@ export function CryptoDashboard({
                   <CardContent className="pt-4">
                     <ChartContainer config={chartConfig} className="h-[280px] w-full">
                       <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.35} />
-                            <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
                         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
                         <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickFormatter={(v) => v === 0 ? "0" : `${v}`} />
@@ -477,7 +506,7 @@ export function CryptoDashboard({
                             />
                           }
                         />
-                        <Area type="monotone" dataKey="value" stroke="var(--chart-1)" strokeWidth={2.5} fill="url(#colorValue)" />
+                        <Area type="monotone" dataKey="value" stroke="var(--chart-1)" strokeWidth={2.5} fill="transparent" />
                       </AreaChart>
                     </ChartContainer>
                   </CardContent>
@@ -652,4 +681,3 @@ function MobileNavItem({
     </button>
   )
 }
-

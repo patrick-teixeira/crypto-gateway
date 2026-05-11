@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { apiUrl, getApiBaseUrl } from "@/lib/api-url"
+import { getAuthToken } from "@/lib/auth-session"
 
 export function SettingsScreen() {
   const [apiKeys, setApiKeys] = useState<Array<{ id: number; name: string; api_key: string; created_at: number }>>([])
@@ -17,7 +18,7 @@ export function SettingsScreen() {
   const [successMessage, setSuccessMessage] = useState("")
 
   async function loadApiKeys() {
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token) {
       setErrorMessage("Sessão inválida. Faça login novamente.")
       return
@@ -54,7 +55,7 @@ export function SettingsScreen() {
       return
     }
 
-    const token = localStorage.getItem("auth_token") ?? sessionStorage.getItem("auth_token")
+    const token = getAuthToken()
     if (!token) {
       setErrorMessage("Sessão inválida. Faça login novamente.")
       return

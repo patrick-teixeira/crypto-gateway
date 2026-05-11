@@ -116,6 +116,68 @@ const previewRevenueData: Record<PreviewTimeRange, PreviewRevenuePoint[]> = {
   ],
 }
 
+const previewWeeklyData = [
+  { day: "25/04", total: 15 },
+  { day: "26/04", total: 30 },
+  { day: "27/04", total: 20 },
+  { day: "28/04", total: 40 },
+  { day: "29/04", total: 25 },
+  { day: "30/04", total: 50 },
+  { day: "01/05", total: 5 },
+]
+
+const previewDepositWallets = [
+  {
+    token: "USDC",
+    network: "Base",
+    address: "0xD7937a...b462A7",
+    tokenBalance: "30,00 USDC",
+    nativeBalance: "0,018 ETH",
+    status: "Livre",
+  },
+  {
+    token: "USDC",
+    network: "Base",
+    address: "0x39f5EF...8a7d10",
+    tokenBalance: "20,00 USDC",
+    nativeBalance: "0,014 ETH",
+    status: "Livre",
+  },
+  {
+    token: "USDC",
+    network: "Ronin",
+    address: "0xd5b515...7810F9",
+    tokenBalance: "50,00 USDC",
+    nativeBalance: "0,42 RON",
+    status: "Livre",
+  },
+]
+
+const previewMainWalletBalances = [
+  { network: "Ronin", amount: "8,42 RON" },
+  { network: "Ethereum", amount: "0,12 ETH" },
+  { network: "Polygon", amount: "64,50 MATIC" },
+  { network: "Bsc", amount: "1,80 BNB" },
+  { network: "Base", amount: "0,35 ETH" },
+]
+
+const previewWithdrawals = [
+  {
+    amount: "100,00 USDC",
+    network: "Base",
+    status: "Concluído",
+    statusClass: "bg-green-500/10 text-green-400",
+    message: "withdraw completed",
+  },
+  {
+    amount: "40,00 USDC",
+    network: "Ronin",
+    status: "Concluído",
+    statusClass: "bg-green-500/10 text-green-400",
+    message: "withdraw completed",
+  },
+]
+
 function formatPreviewCurrency(value: number) {
   return `$${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
 }
@@ -135,11 +197,10 @@ function buildPreviewChart(series: PreviewRevenuePoint[]) {
   })
 
   const linePath = points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x},${point.y}`).join(" ")
-  const areaPath = `${linePath} L${width},${height} L0,${height} Z`
   const peakPoint = points.reduce((peak, point) => (point.y < peak.y ? point : peak), points[0])
   const yAxisLabels = [roundedMax, roundedMax * 0.75, roundedMax * 0.5, roundedMax * 0.25, 0].map(Math.round)
 
-  return { areaPath, linePath, peakPoint, yAxisLabels }
+  return { linePath, peakPoint, points, yAxisLabels }
 }
 
 function PreviewTokenIcon({ token, size = "sm" }: { token: "USDC" | "USDT"; size?: "xs" | "sm" }) {
@@ -162,16 +223,28 @@ export function LandingPage() {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [previewRange, setPreviewRange] = useState<PreviewTimeRange>("1A")
+  const [hoveredRevenueIndex, setHoveredRevenueIndex] = useState<number | null>(null)
+  const [hoveredWeeklyIndex, setHoveredWeeklyIndex] = useState<number | null>(null)
   const previewSeries = previewRevenueData[previewRange]
   const previewTotal = previewSeries.reduce((sum, point) => sum + point.value, 0)
+  const previewWeeklyTotal = previewWeeklyData.reduce((sum, point) => sum + point.total, 0)
+  const previewWeeklyMax = Math.max(...previewWeeklyData.map((point) => point.total), 1)
   const previewChart = useMemo(() => buildPreviewChart(previewSeries), [previewSeries])
 
   useEffect(() => {
-    setMounted(true)
+    const timeout = window.setTimeout(() => setMounted(true), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
+  }
+
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
   }
 
   return (
@@ -194,15 +267,27 @@ export function LandingPage() {
           </div>
 
           <nav className="hidden items-center gap-8 md:flex">
-            <a href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <button
+              type="button"
+              onClick={() => scrollToSection("features")}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
               Recursos
-            </a>
-            <a href="#benefits" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("benefits")}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
               Benefícios
-            </a>
-            <a href="#stats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("stats")}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
               Números
-            </a>
+            </button>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -269,12 +354,16 @@ export function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <a href="#features">
-                <Button size="lg" variant="outline" className="w-full gap-2 sm:w-auto">
-                  Conhecer Recursos
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </a>
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                className="w-full gap-2 sm:w-auto"
+                onClick={() => scrollToSection("features")}
+              >
+                Conhecer Recursos
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -326,7 +415,7 @@ export function LandingPage() {
       {/* Benefits Section */}
       <section id="benefits" className="border-t border-border bg-secondary/20 py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Simplifique seus pagamentos cripto
@@ -350,9 +439,8 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#2dd4bf]/20 via-transparent to-[#2dd4bf]/20 opacity-0 blur-xl transition-opacity dark:opacity-75" />
-              <div className="relative overflow-hidden rounded-2xl border border-gray-800 bg-[#0a0a0a] p-4 shadow-xl dark:border-[#2dd4bf]/20">
+            <div className="w-full">
+              <div className="relative overflow-hidden rounded-2xl border border-gray-800 bg-[#0a0a0a] p-4 shadow-xl">
                 {/* Dashboard Preview - Matching Real Dashboard */}
                 <div className="space-y-3">
                   {/* Top Section - Balance + Refresh */}
@@ -404,7 +492,10 @@ export function LandingPage() {
                             <button
                               key={range}
                               type="button"
-                              onClick={() => setPreviewRange(range)}
+                              onClick={() => {
+                                setPreviewRange(range)
+                                setHoveredRevenueIndex(null)
+                              }}
                               className={`rounded px-1 py-0.5 ${
                                 range === previewRange ? "bg-gray-700 text-white" : "text-gray-500 hover:text-gray-300"
                               }`}
@@ -422,23 +513,23 @@ export function LandingPage() {
                             <span key={label}>{label}</span>
                           ))}
                         </div>
-                        <div className="ml-5 h-full">
+                        <div className="relative ml-5 h-full">
                           <svg className="h-full w-full" viewBox="0 0 220 50" preserveAspectRatio="none">
-                            <defs>
-                              <linearGradient id="previewChartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.4" />
-                                <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0" />
-                              </linearGradient>
-                            </defs>
                             {/* Grid lines */}
                             <line x1="0" y1="12.5" x2="220" y2="12.5" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
                             <line x1="0" y1="25" x2="220" y2="25" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
                             <line x1="0" y1="37.5" x2="220" y2="37.5" stroke="#333" strokeWidth="0.5" strokeDasharray="2" />
-                            {/* Area fill - smooth curve with distributed values */}
-                            <path
-                              d={previewChart.areaPath}
-                              fill="url(#previewChartGradient)"
-                            />
+                            {hoveredRevenueIndex !== null && (
+                              <line
+                                x1={previewChart.points[hoveredRevenueIndex].x}
+                                y1="0"
+                                x2={previewChart.points[hoveredRevenueIndex].x}
+                                y2="50"
+                                stroke="#444"
+                                strokeWidth="0.6"
+                                strokeDasharray="2"
+                              />
+                            )}
                             {/* Line */}
                             <path
                               d={previewChart.linePath}
@@ -450,7 +541,45 @@ export function LandingPage() {
                             />
                             {/* Dot on peak */}
                             <circle cx={previewChart.peakPoint.x} cy={previewChart.peakPoint.y} r="2" fill="#2dd4bf" />
+                            {hoveredRevenueIndex !== null && (
+                              <circle
+                                cx={previewChart.points[hoveredRevenueIndex].x}
+                                cy={previewChart.points[hoveredRevenueIndex].y}
+                                r="2.4"
+                                fill="#2dd4bf"
+                                stroke="#0a0a0a"
+                                strokeWidth="1"
+                              />
+                            )}
                           </svg>
+                          {hoveredRevenueIndex !== null && (
+                            <div
+                              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-gray-700 bg-[#0a0a0a] px-1.5 py-1 text-[7px] shadow-lg"
+                              style={{
+                                left: `${(previewChart.points[hoveredRevenueIndex].x / 220) * 100}%`,
+                                top: `${(previewChart.points[hoveredRevenueIndex].y / 50) * 100}%`,
+                              }}
+                            >
+                              <p className="font-medium text-white">
+                                {formatPreviewCurrency(previewSeries[hoveredRevenueIndex].value)}
+                              </p>
+                              <p className="text-gray-500">{previewSeries[hoveredRevenueIndex].label}</p>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 flex">
+                            {previewSeries.map((point, i) => (
+                              <button
+                                key={point.label}
+                                type="button"
+                                aria-label={`${formatPreviewCurrency(point.value)} recebidos em ${point.label}`}
+                                onMouseEnter={() => setHoveredRevenueIndex(i)}
+                                onMouseLeave={() => setHoveredRevenueIndex(null)}
+                                onFocus={() => setHoveredRevenueIndex(i)}
+                                onBlur={() => setHoveredRevenueIndex(null)}
+                                className="h-full flex-1 cursor-crosshair outline-none"
+                              />
+                            ))}
+                          </div>
                         </div>
                         {/* X-axis months */}
                         <div className="ml-5 mt-1 flex justify-between text-[5px] text-gray-600">
@@ -464,25 +593,37 @@ export function LandingPage() {
                     {/* Últimos 7 dias Card */}
                     <div className="col-span-2 rounded-xl border border-gray-800 bg-[#111111] p-3">
                       <p className="text-[10px] font-medium text-white">Últimos 7 dias</p>
-                      <p className="text-lg font-bold text-white">$185,00</p>
+                      <p className="text-lg font-bold text-white">{formatPreviewCurrency(previewWeeklyTotal)}</p>
                       <p className="text-[7px] text-gray-500">Total recebido na semana</p>
                       {/* Bar chart - 7 days */}
-                      <div className="mt-2 flex h-12 items-end justify-between gap-0.5">
-                        {[
-                          { h: 3, date: "25/04" },
-                          { h: 6, date: "26/04" },
-                          { h: 4, date: "27/04" },
-                          { h: 8, date: "28/04" },
-                          { h: 5, date: "29/04" },
-                          { h: 10, date: "30/04" },
-                          { h: 7, date: "01/05" },
-                        ].map((bar, i) => (
-                          <div key={i} className="flex flex-1 flex-col items-center gap-0.5">
-                            <div 
-                              className={`w-full rounded-sm ${bar.h > 7 ? "bg-[#2dd4bf]" : "bg-[#2dd4bf]/60"}`}
-                              style={{ height: `${bar.h * 3.5}px` }}
-                            />
-                            <span className="text-[4px] text-gray-600">{bar.date}</span>
+                      <div className="mt-2 flex h-14 items-end justify-between gap-0.5">
+                        {previewWeeklyData.map((bar, i) => (
+                          <div key={bar.day} className="relative flex flex-1 flex-col items-center gap-0.5">
+                            {hoveredWeeklyIndex === i && (
+                              <div className="absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md border border-gray-700 bg-[#0a0a0a] px-1.5 py-1 text-[7px] shadow-lg">
+                                <p className="font-medium text-white">{formatPreviewCurrency(bar.total)}</p>
+                                <p className="text-gray-500">{bar.day}</p>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              aria-label={`${formatPreviewCurrency(bar.total)} recebidos em ${bar.day}`}
+                              onMouseEnter={() => setHoveredWeeklyIndex(i)}
+                              onMouseLeave={() => setHoveredWeeklyIndex(null)}
+                              onFocus={() => setHoveredWeeklyIndex(i)}
+                              onBlur={() => setHoveredWeeklyIndex(null)}
+                              className="flex h-10 w-full items-end rounded-sm outline-none focus-visible:ring-1 focus-visible:ring-[#2dd4bf]"
+                            >
+                              <span
+                                className={`block w-full rounded-sm transition-colors ${
+                                  hoveredWeeklyIndex === i || bar.total === previewWeeklyMax
+                                    ? "bg-[#2dd4bf]"
+                                    : "bg-[#2dd4bf]/60"
+                                }`}
+                                style={{ height: `${Math.max(4, (bar.total / previewWeeklyMax) * 40)}px` }}
+                              />
+                            </button>
+                            <span className="text-[4px] text-gray-600">{bar.day}</span>
                           </div>
                         ))}
                       </div>
@@ -541,6 +682,155 @@ export function LandingPage() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Wallet Preview Section */}
+      <section id="wallet-preview" className="border-t border-border py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Controle suas carteiras com clareza
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Acompanhe main wallet, carteiras de depósito, saldos por rede e saques em uma visão organizada.
+              </p>
+              <div className="mt-10 space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Saldos por rede</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">Veja token e gas token de cada carteira sem alternar telas.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Depósitos rastreáveis</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">Identifique carteiras livres, em uso e prontas para saque.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full overflow-hidden rounded-2xl border border-gray-800 bg-[#030303] p-3 shadow-xl">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xl font-bold text-white">Carteiras</p>
+                    <p className="text-[10px] text-gray-400">21 depósitos · 21 livres · 0 em uso</p>
+                  </div>
+                  <button className="flex shrink-0 items-center gap-1.5 rounded-full border border-gray-800 px-2.5 py-1.5 text-[9px] font-medium text-white">
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Atualizar
+                  </button>
+                </div>
+
+                <div className="rounded-2xl border border-gray-800 bg-[#08090a] p-4">
+                  <p className="text-[10px] font-medium text-gray-400">Main wallet</p>
+                  <div className="mt-6 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-800 text-gray-300">
+                          <Wallet className="h-3.5 w-3.5" />
+                        </div>
+                        <p className="text-[11px] font-semibold text-white">EVM principal</p>
+                      </div>
+                      <p className="mt-3 truncate font-mono text-[8px] text-gray-500">0x58Ee323bA91408f87IF5975df5d1F928CE73698b</p>
+                    </div>
+                    <span className="flex shrink-0 items-center gap-1 rounded-full border border-gray-800 px-2 py-1 font-mono text-[8px] font-semibold text-white">
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 8h12v12H8z M4 4h12v12H4z" />
+                      </svg>
+                      0x58Ee32...73698b
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {previewMainWalletBalances.map((balance) => (
+                      <span key={balance.network} className="inline-flex items-center gap-1 rounded-md bg-[#121416] px-2 py-1 text-[8px]">
+                        <span className="text-gray-400">{balance.network}</span>
+                        <span className="font-semibold text-white">{balance.amount}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid gap-3 xl:grid-cols-[minmax(0,1.45fr)_minmax(190px,0.85fr)]">
+                  <div className="overflow-hidden rounded-2xl border border-gray-800 bg-[#08090a]">
+                    <div className="px-4 py-3">
+                      <p className="text-sm font-semibold text-white">Depósitos</p>
+                      <p className="mt-1 text-[9px] text-gray-400">Mostrando 1-3 de 21</p>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                      {previewDepositWallets.map((wallet) => (
+                        <div key={`${wallet.network}-${wallet.address}`} className="px-4 py-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <PreviewTokenIcon token={wallet.token as "USDC" | "USDT"} />
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-[11px] font-semibold text-white">{wallet.token}</p>
+                                  <span className="rounded bg-black px-1.5 py-0.5 text-[8px] text-gray-400">{wallet.network}</span>
+                                  <span className="rounded-full bg-green-500/10 px-1.5 py-0.5 text-[8px] font-medium text-green-400">
+                                    {wallet.status}
+                                  </span>
+                                </div>
+                                <p className="mt-1 truncate font-mono text-[8px] text-gray-500">{wallet.address}</p>
+                              </div>
+                            </div>
+                            <div className="hidden shrink-0 grid-cols-2 gap-4 text-left sm:grid">
+                              <div>
+                                <p className="text-[8px] text-gray-400">Token</p>
+                                <p className="text-[10px] font-semibold text-white">{wallet.tokenBalance}</p>
+                              </div>
+                              <div>
+                                <p className="text-[8px] text-gray-400">Gas</p>
+                                <p className="text-[10px] font-semibold text-white">{wallet.nativeBalance}</p>
+                              </div>
+                            </div>
+                            <span className="hidden shrink-0 rounded-full border border-gray-800 px-2 py-1 font-mono text-[8px] font-semibold text-white md:inline-flex">
+                              {wallet.address}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="overflow-hidden rounded-2xl border border-gray-800 bg-[#08090a]">
+                    <div className="px-4 py-3">
+                      <p className="text-sm font-semibold text-white">Saques</p>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                      {previewWithdrawals.map((withdrawal) => (
+                        <div key={`${withdrawal.amount}-${withdrawal.status}`} className="px-4 py-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[11px] font-semibold text-white">{withdrawal.amount}</p>
+                              <p className="mt-0.5 text-[9px] text-gray-400">{withdrawal.network}</p>
+                              <p className="mt-2 font-mono text-[8px] text-gray-500">0x649f30...C07b98</p>
+                            </div>
+                            <span className={`rounded-full px-2 py-1 text-[8px] font-medium ${withdrawal.statusClass}`}>
+                              {withdrawal.status}
+                            </span>
+                          </div>
+                          <p className="mt-3 text-[8px] text-gray-500">{withdrawal.message}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

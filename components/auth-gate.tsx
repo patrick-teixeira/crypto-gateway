@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation"
 import { LoginForm } from "@/components/login-form"
 import { CryptoDashboard } from "@/components/crypto-dashboard"
 import { Button } from "@/components/ui/button"
+import {
+  clearAuthSession,
+  clearLegacyAuthStorage,
+  clearLegacyAuthTokenStorage,
+  getAuthToken,
+} from "@/lib/auth-session"
 
 export type DashboardView = "dashboard" | "wallets" | "settings" | "transactions"
 
@@ -21,27 +27,24 @@ interface AuthGateProps {
 
 export function AuthGate({ initialView = "dashboard" }: AuthGateProps) {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window === "undefined") {
-      return false
-    }
-    const localToken = window.localStorage.getItem("auth_token")
-    const sessionToken = window.sessionStorage.getItem("auth_token")
-    const localUser = window.localStorage.getItem("auth_user")
-    const sessionUser = window.sessionStorage.getItem("auth_user")
-    const hasSession = Boolean(localToken || sessionToken) && Boolean(localUser || sessionUser)
+  const [isCheckingSession, setIsCheckingSession] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentScreen, setCurrentScreen] = useState<DashboardView>(initialView)
+
+  useEffect(() => {
+    const hasSession = Boolean(getAuthToken())
 
     if (!hasSession) {
-      window.localStorage.removeItem("auth_token")
-      window.localStorage.removeItem("auth_user")
-      window.sessionStorage.removeItem("auth_token")
-      window.sessionStorage.removeItem("auth_user")
-      return false
+      clearLegacyAuthStorage()
+      setIsAuthenticated(false)
+      setIsCheckingSession(false)
+      return
     }
 
-    return true
-  })
-  const [currentScreen, setCurrentScreen] = useState<DashboardView>(initialView)
+    clearLegacyAuthTokenStorage()
+    setIsAuthenticated(true)
+    setIsCheckingSession(false)
+  }, [])
 
   useEffect(() => {
     setCurrentScreen(initialView)
@@ -54,17 +57,26 @@ export function AuthGate({ initialView = "dashboard" }: AuthGateProps) {
 
   function handleAuthSuccess() {
     setIsAuthenticated(true)
+    setIsCheckingSession(false)
     setCurrentScreen(initialView)
   }
 
   function handleLogout() {
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("auth_user")
-    sessionStorage.removeItem("auth_token")
-    sessionStorage.removeItem("auth_user")
+    clearAuthSession()
     setIsAuthenticated(false)
     setCurrentScreen("dashboard")
     router.replace("/home")
+  }
+
+  if (isCheckingSession) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
