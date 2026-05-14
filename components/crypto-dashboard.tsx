@@ -326,7 +326,6 @@ export function CryptoDashboard({
           <NavItem icon={Settings} label="Configuracoes" active={currentView === "settings"} onClick={onOpenSettings} />
         </nav>
         <div className="mt-auto rounded-xl bg-sidebar-accent p-4">
-          <p className="text-sm font-medium text-sidebar-foreground">Upgrade Pro</p>
           <p className="mt-1 text-xs text-muted-foreground">Acesse recursos avancados e analises em tempo real.</p>
           <Button size="sm" className="mt-3 w-full">Upgrade</Button>
         </div>

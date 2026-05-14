@@ -42,12 +42,7 @@ const benefits = [
     icon: BarChart3,
     title: "Analytics em Tempo Real",
     description: "Dashboard completo com métricas detalhadas sobre suas transações e receitas.",
-  },
-  {
-    icon: Lock,
-    title: "Conformidade Total",
-    description: "Relatórios automáticos e ferramentas de compliance para facilitar sua contabilidade.",
-  },
+  }
 ]
 
 type PreviewTimeRange = "1S" | "1M" | "3M" | "1A" | "Todos"
@@ -701,7 +696,7 @@ export function LandingPage() {
                 Controle suas carteiras com clareza
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Acompanhe main wallet, carteiras de depósito, saldos por rede e saques em uma visão organizada.
+                Gerencie seus recebimentos com total transparência. Nenhum token fica sob custódia e todas as carteiras são rastreáveis em tempo real.
               </p>
               <div className="mt-10 space-y-6">
                 <div className="flex gap-4">
@@ -709,8 +704,8 @@ export function LandingPage() {
                     <Wallet className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Saldos por rede</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">Veja token e gas token de cada carteira sem alternar telas.</p>
+                    <h3 className="font-semibold text-foreground">Saldos em tempo real</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">Acompanhe tokens e taxas de cada carteira.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -718,8 +713,8 @@ export function LandingPage() {
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Depósitos rastreáveis</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">Identifique carteiras livres, em uso e prontas para saque.</p>
+                    <h3 className="font-semibold text-foreground">Carteiras rastreáveis</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">Visualize depósitos e movimentações com transparência.</p>
                   </div>
                 </div>
               </div>
