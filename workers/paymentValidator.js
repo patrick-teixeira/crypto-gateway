@@ -1,5 +1,6 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import pkg from "pg";
+const { Pool, types } = pkg;
+types.setTypeParser(types.builtins.INT8, parseInt);
 import { ethers } from "ethers";
 import dotenv from "dotenv";
 import path from "path";
@@ -13,7 +14,10 @@ const BASE_DIR = path.join(__dirname, "..");
 
 dotenv.config({ path: path.join(BASE_DIR, ".env") });
 
-const DB_PATH = path.join(BASE_DIR, "data", "payments.db");
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
 const CHECKOUT_EXPIRATION_SECONDS = 600;
 const POLL_INTERVAL_MS = 20_000;
 const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
@@ -32,24 +36,6 @@ function normalize(value) {
 
 function isContractAddress(address) {
   return /^0x[a-fA-F0-9]{40}$/.test(String(address ?? "").trim());
-}
-
-async function ensureNotificationsTable() {
-  const db = await open({ filename: DB_PATH, driver: sqlite3.Database });
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS notifications (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      type TEXT NOT NULL,
-      entity_id INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      message TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'unread',
-      created_at INTEGER NOT NULL,
-      UNIQUE(user_id, type, entity_id)
-    )
-  `);
-  await db.close();
 }
 
 class Validator {
@@ -73,54 +59,38 @@ class Validator {
   }
 
   async getPendingPayments() {
-    const db = await open({
-      filename: DB_PATH,
-      driver: sqlite3.Database,
-    });
-
-    const rows = await db.all(
+    const result = await pool.query(
       `SELECT id, user_id, wallet_id, address, private_key, amount, token, chain, status, created_at, webhook_url, balance_before
        FROM payments
-       WHERE status = ?`,
+       WHERE status = $1`,
       ["waiting-payment"],
     );
 
-    await db.close();
-    // Decrypt private keys before returning
-    return rows.map((row) => {
+    return result.rows.map((row) => {
       try {
         return { ...row, private_key: decrypt(row.private_key) };
       } catch {
-        // Key was stored unencrypted (legacy row) — return as-is
         return row;
       }
     });
   }
 
   async updatePaymentStatus(id, newStatus, message = null) {
-    const db = await open({
-      filename: DB_PATH,
-      driver: sqlite3.Database,
-    });
-
-    await db.run(
-      "UPDATE payments SET status = ?, message = ? WHERE id = ?",
+    await pool.query(
+      "UPDATE payments SET status = $1, message = $2 WHERE id = $3",
       [newStatus, message, id],
     );
-
-    await db.close();
   }
 
   async createNotification({ userId, type, entityId, title, message }) {
     if (!userId) return;
-    const db = await open({ filename: DB_PATH, driver: sqlite3.Database });
-    await db.run(
-      `INSERT OR IGNORE INTO notifications (
+    await pool.query(
+      `INSERT INTO notifications (
         user_id, type, entity_id, title, message, status, created_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (user_id, type, entity_id) DO NOTHING`,
       [userId, type, entityId, title, message, "unread", Math.floor(Date.now() / 1000)],
     );
-    await db.close();
   }
 
   async validatePayments() {
@@ -213,15 +183,13 @@ class Validator {
 
   async creditUserBalance(userId, token, chain, amount) {
     if (!userId || !token || !chain) return;
-    const db = await open({ filename: DB_PATH, driver: sqlite3.Database });
-    await db.run(
+    await pool.query(
       `INSERT INTO balances (user_id, token, chain, amount)
-       VALUES (?, ?, ?, ?)
-       ON CONFLICT(user_id, token, chain)
-       DO UPDATE SET amount = amount + excluded.amount`,
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (user_id, token, chain)
+       DO UPDATE SET amount = balances.amount + $4`,
       [userId, token, chain, amount],
     );
-    await db.close();
   }
 
   async getTokenBalance(chain, wallets, tokenAddress) {
@@ -294,7 +262,6 @@ class Validator {
 }
 
 async function main() {
-  await ensureNotificationsTable();
   const validator = new Validator(CHAIN_RPC_URLS);
   const configuredChains = Object.entries(CHAIN_RPC_URLS)
     .filter(([, rpcUrl]) => Boolean(rpcUrl))
@@ -316,9 +283,6 @@ async function main() {
     }
   };
 
-  await runValidation();
-  const intervalId = setInterval(runValidation, POLL_INTERVAL_MS);
-
   const shutdown = () => {
     clearInterval(intervalId);
     console.log("Payment validator finalizado");
@@ -327,9 +291,9 @@ async function main() {
 
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
+
+  runValidation();
+  const intervalId = setInterval(runValidation, POLL_INTERVAL_MS);
 }
 
-main().catch((error) => {
-  console.error(`Falha fatal no validator: ${String(error)}`);
-  process.exit(1);
-});
+main();

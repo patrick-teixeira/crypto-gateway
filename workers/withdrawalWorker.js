@@ -1,5 +1,6 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import pkg from "pg";
+const { Pool, types } = pkg;
+types.setTypeParser(types.builtins.INT8, parseInt);
 import { ethers } from "ethers";
 import dotenv from "dotenv";
 import path from "path";
@@ -12,7 +13,10 @@ const BASE_DIR = path.join(__dirname, "..");
 
 dotenv.config({ path: path.join(BASE_DIR, ".env") });
 
-const DB_PATH = path.join(BASE_DIR, "data", "payments.db");
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
 const POLL_INTERVAL_MS = 20_000;
 const GAS_BUFFER_MULTIPLIER = 2n;
 const MIN_GAS_LIMIT = 100_000n;
@@ -27,28 +31,6 @@ const CHAIN_RPC_URLS = {
 
 function normalize(value) {
   return String(value ?? "").trim().toLowerCase();
-}
-
-async function getDb() {
-  return open({ filename: DB_PATH, driver: sqlite3.Database });
-}
-
-async function ensureNotificationsTable() {
-  const db = await getDb();
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS notifications (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      type TEXT NOT NULL,
-      entity_id INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      message TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'unread',
-      created_at INTEGER NOT NULL,
-      UNIQUE(user_id, type, entity_id)
-    )
-  `);
-  await db.close();
 }
 
 class WithdrawalWorker {
@@ -68,8 +50,7 @@ class WithdrawalWorker {
   }
 
   async getTasks() {
-    const db = await getDb();
-    const rows = await db.all(
+    const result = await pool.query(
       `SELECT
          withdrawal_tasks.*,
          deposit_wallets.address AS source_address,
@@ -83,31 +64,31 @@ class WithdrawalWorker {
        ORDER BY withdrawal_tasks.created_at ASC
        LIMIT 10`,
     );
-    await db.close();
-    return rows;
+    return result.rows;
   }
 
   async updateTask(id, fields) {
     const keys = Object.keys(fields);
     if (keys.length === 0) return;
     const now = Math.floor(Date.now() / 1000);
-    const assignments = [...keys.map((key) => `${key} = ?`), "updated_at = ?"].join(", ");
+    const assignments = keys.map((key, i) => `${key} = $${i + 1}`).join(", ");
     const values = [...keys.map((key) => fields[key]), now, id];
-    const db = await getDb();
-    await db.run(`UPDATE withdrawal_tasks SET ${assignments} WHERE id = ?`, values);
-    await db.close();
+    const paramCount = keys.length + 1;
+    await pool.query(
+      `UPDATE withdrawal_tasks SET ${assignments}, updated_at = $${paramCount} WHERE id = $${paramCount + 1}`,
+      values,
+    );
   }
 
   async createNotification({ userId, type, entityId, title, message }) {
     if (!userId) return;
-    const db = await getDb();
-    await db.run(
-      `INSERT OR IGNORE INTO notifications (
+    await pool.query(
+      `INSERT INTO notifications (
         user_id, type, entity_id, title, message, status, created_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (user_id, type, entity_id) DO NOTHING`,
       [userId, type, entityId, title, message, "unread", Math.floor(Date.now() / 1000)],
     );
-    await db.close();
   }
 
   async failTask(task, message) {
@@ -256,7 +237,6 @@ class WithdrawalWorker {
 }
 
 async function main() {
-  await ensureNotificationsTable();
   const worker = new WithdrawalWorker(CHAIN_RPC_URLS);
   const configuredChains = Object.entries(CHAIN_RPC_URLS)
     .filter(([, rpcUrl]) => Boolean(rpcUrl))
@@ -272,9 +252,6 @@ async function main() {
     }
   };
 
-  await run();
-  const intervalId = setInterval(run, POLL_INTERVAL_MS);
-
   const shutdown = () => {
     clearInterval(intervalId);
     console.log("Withdrawal worker finalizado");
@@ -283,9 +260,9 @@ async function main() {
 
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
+
+  run();
+  const intervalId = setInterval(run, POLL_INTERVAL_MS);
 }
 
-main().catch((error) => {
-  console.error(`Falha fatal no withdrawal worker: ${String(error)}`);
-  process.exit(1);
-});
+main();

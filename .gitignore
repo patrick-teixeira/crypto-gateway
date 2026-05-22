@@ -1,6 +1,5 @@
 venv
 tests
-data/payments.db
 
 # Secrets
 .env

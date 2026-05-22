@@ -6,7 +6,7 @@ Gateway de pagamentos cripto com checkout, dashboard, carteiras por usuário, va
 
 - Frontend: Next.js, React, Tailwind CSS e Recharts.
 - Backend: Express rodando em `app.js`.
-- Banco: SQLite em `data/payments.db`.
+- Banco: PostgreSQL (conexão via `DATABASE_URL` no `.env`).
 - Blockchain: `ethers` com RPCs EVM configurados no `.env`.
 - Workers:
   - `workers/paymentValidator.js` valida pagamentos pendentes.
@@ -42,6 +42,7 @@ Por padrão:
 Crie um arquivo `.env` na raiz. Exemplo:
 
 ```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/crypto_gateway
 PAYMENT_ENCRYPTION_KEY=uma_chave_hexadecimal_de_32_bytes
 
 RONIN_RPC_URL=https://api.roninchain.com/rpc
@@ -54,6 +55,8 @@ BASE_RPC_URL=https://base.drpc.org
 CHECKOUT_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8021
 ```
+
+`DATABASE_URL` define a conexão com o PostgreSQL. O banco e as tabelas são criados automaticamente na primeira execução.
 
 `PAYMENT_ENCRYPTION_KEY` é usada para criptografar private keys salvas no banco. Não commite o `.env`.
 
@@ -356,13 +359,17 @@ GET  /notifications
 POST /notifications/read
 ```
 
+## Pré-requisitos
+
+Antes de rodar o backend, crie o banco no PostgreSQL:
+
+```bash
+createdb crypto_gateway
+```
+
 ## Banco de Dados
 
-O SQLite fica em:
-
-```txt
-data/payments.db
-```
+O projeto usa PostgreSQL. A conexão é configurada via `DATABASE_URL` no `.env`.
 
 Tabelas principais:
 
@@ -381,7 +388,7 @@ As migrações simples são feitas automaticamente ao importar as rotas da API o
 
 ## Observações de Segurança
 
-Este projeto armazena private keys criptografadas no SQLite. Para uso real em produção, seria recomendado evoluir para:
+Este projeto armazena private keys criptografadas no PostgreSQL. Para uso real em produção, seria recomendado evoluir para:
 
 - armazenamento de chaves em KMS/HSM ou vault;
 - segregação entre API, workers e banco;
