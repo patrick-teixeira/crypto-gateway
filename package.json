@@ -27,6 +27,7 @@
     "lucide-react": "^1.7.0",
     "next": "16.1.6",
     "next-themes": "latest",
+    "nodemailer": "^8.0.10",
     "pg": "^8.21.0",
     "qrcode.react": "^4.2.0",
     "radix-ui": "latest",

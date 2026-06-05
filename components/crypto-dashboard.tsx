@@ -355,7 +355,7 @@ export function CryptoDashboard({
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuContent align="end" className="w-80" style={dashboardDarkThemeVars}>
                 <DropdownMenuLabel className="flex items-center justify-between">
                   <span>Notificações</span>
                   {notifications.length > 0 && (
@@ -401,7 +401,7 @@ export function CryptoDashboard({
                   <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" style={dashboardDarkThemeVars}>
                 <DropdownMenuItem>Perfil</DropdownMenuItem>
                 <DropdownMenuItem onClick={onOpenSettings}>Configuracoes</DropdownMenuItem>
                 <DropdownMenuItem>Sair</DropdownMenuItem>

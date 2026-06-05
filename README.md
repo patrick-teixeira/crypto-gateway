@@ -53,7 +53,14 @@ AVALANCHE_RPC_URL=https://api.avax.network/ext/bc/C/rpc
 BASE_RPC_URL=https://base.drpc.org
 
 CHECKOUT_BASE_URL=http://localhost:3000
+APP_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8021
+
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=usuario@example.com
+SMTP_PASS=senha_ou_app_password
+SMTP_FROM="CryptoGateway <no-reply@example.com>"
 ```
 
 `DATABASE_URL` define a conexão com o PostgreSQL. O banco e as tabelas são criados automaticamente na primeira execução.
@@ -61,6 +68,10 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8021
 `PAYMENT_ENCRYPTION_KEY` é usada para criptografar private keys salvas no banco. Não commite o `.env`.
 
 `NEXT_PUBLIC_API_BASE_URL` é opcional. Se não existir, o frontend tenta usar o mesmo host aberto no navegador com a porta `8021`, o que ajuda quando o painel é acessado pelo celular na rede local.
+
+`APP_BASE_URL` é usado pela recuperação de senha para montar o link enviado por e-mail, como `http://localhost:3000/reset-password?token=...`.
+
+As variáveis `SMTP_*` configuram o envio dos e-mails de recuperação de senha. Sem elas, a API retorna erro controlado ao solicitar recuperação.
 
 ## Redes e Tokens Suportados
 

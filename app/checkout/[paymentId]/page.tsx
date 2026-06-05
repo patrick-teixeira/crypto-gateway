@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import { QRCodeSVG } from "qrcode.react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -57,6 +57,25 @@ function NetworkIcon({ chain }: { chain: string }) {
 
 const CHECKOUT_DURATION_SECONDS = 600
 const STATUS_POLL_INTERVAL_MS = 10_000
+const checkoutDarkThemeVars = {
+  "--background": "oklch(0.1 0.005 247)",
+  "--foreground": "oklch(0.985 0.002 247)",
+  "--card": "oklch(0.145 0.005 247)",
+  "--card-foreground": "oklch(0.985 0.002 247)",
+  "--popover": "oklch(0.145 0.005 247)",
+  "--popover-foreground": "oklch(0.985 0.002 247)",
+  "--primary": "oklch(0.985 0.002 247)",
+  "--primary-foreground": "oklch(0.1 0.005 247)",
+  "--secondary": "oklch(0.2 0.005 247)",
+  "--secondary-foreground": "oklch(0.985 0.002 247)",
+  "--muted": "oklch(0.2 0.005 247)",
+  "--muted-foreground": "oklch(0.65 0.005 247)",
+  "--accent": "oklch(0.2 0.005 247)",
+  "--accent-foreground": "oklch(0.985 0.002 247)",
+  "--border": "oklch(0.25 0.005 247)",
+  "--input": "oklch(0.2 0.005 247)",
+  "--ring": "oklch(0.985 0.002 247)",
+} as CSSProperties
 
 function formatTimeLeft(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds)
@@ -190,7 +209,7 @@ export default function CheckoutPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6" style={checkoutDarkThemeVars}>
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-t-foreground" />
           <p className="text-sm">Carregando checkout...</p>
@@ -201,7 +220,7 @@ export default function CheckoutPage() {
 
   if (errorMessage) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6" style={checkoutDarkThemeVars}>
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
@@ -219,7 +238,7 @@ export default function CheckoutPage() {
 
   if (isPaid) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6" style={checkoutDarkThemeVars}>
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 ring-4 ring-green-500/20">
@@ -251,7 +270,7 @@ export default function CheckoutPage() {
 
   if (isExpired) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6" style={checkoutDarkThemeVars}>
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 ring-4 ring-red-500/20">
@@ -274,7 +293,7 @@ export default function CheckoutPage() {
     const tokenOptions = selectedChain ? Object.entries(availableChains[selectedChain] ?? {}) : []
 
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6" style={checkoutDarkThemeVars}>
         <div className="w-full max-w-md space-y-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground">Escolha como pagar</h1>
@@ -304,7 +323,12 @@ export default function CheckoutPage() {
                   <SelectTrigger className="h-12 w-full rounded-lg border-border bg-background px-3">
                     <SelectValue placeholder="Selecione uma rede" />
                   </SelectTrigger>
-                  <SelectContent position="popper" align="start" className="w-[--radix-select-trigger-width] rounded-xl">
+                  <SelectContent
+                    position="popper"
+                    align="start"
+                    className="w-[--radix-select-trigger-width] rounded-xl"
+                    style={checkoutDarkThemeVars}
+                  >
                   {Object.keys(availableChains).map((chain) => (
                       <SelectItem key={chain} value={chain} className="rounded-lg">
                         <span className="flex items-center gap-2">
@@ -324,7 +348,12 @@ export default function CheckoutPage() {
                     <SelectTrigger className="h-12 w-full rounded-lg border-border bg-background px-3">
                       <SelectValue placeholder="Selecione uma moeda" />
                     </SelectTrigger>
-                    <SelectContent position="popper" align="start" className="w-[--radix-select-trigger-width] rounded-xl">
+                    <SelectContent
+                      position="popper"
+                      align="start"
+                      className="w-[--radix-select-trigger-width] rounded-xl"
+                      style={checkoutDarkThemeVars}
+                    >
                       {tokenOptions.map(([symbol, address]) => (
                         <SelectItem key={`${selectedChain}-${symbol}`} value={symbol} className="rounded-lg">
                           <span className="flex w-full items-center justify-between gap-3">
@@ -368,7 +397,7 @@ export default function CheckoutPage() {
 
   if (!payment?.address) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6" style={checkoutDarkThemeVars}>
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
@@ -391,7 +420,7 @@ export default function CheckoutPage() {
     ?? "TOKEN"
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6">
+    <main className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6" style={checkoutDarkThemeVars}>
       <div className="w-full max-w-md space-y-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground">Finalize o pagamento</h1>

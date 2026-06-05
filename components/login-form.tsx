@@ -10,26 +10,29 @@ import { clearLegacyAuthStorage, setAuthToken } from "@/lib/auth-session"
 
 interface LoginFormProps {
   onAuthSuccess?: () => void
+  initialSuccessMessage?: string
 }
 
-export function LoginForm({ onAuthSuccess }: LoginFormProps) {
-  const [mode, setMode] = useState<"login" | "register">("login")
+export function LoginForm({ onAuthSuccess, initialSuccessMessage = "" }: LoginFormProps) {
+  const [mode, setMode] = useState<"login" | "register" | "forgot-password">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  const [successMessage, setSuccessMessage] = useState("")
+  const [successMessage, setSuccessMessage] = useState(initialSuccessMessage)
 
   const isLoginMode = mode === "login"
+  const isRegisterMode = mode === "register"
+  const isForgotPasswordMode = mode === "forgot-password"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage("")
     setSuccessMessage("")
 
-    if (!isLoginMode && password !== confirmPassword) {
+    if (isRegisterMode && password !== confirmPassword) {
       setErrorMessage("As senhas não conferem.")
       return
     }
@@ -37,16 +40,18 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
     setIsLoading(true)
 
     try {
-      const endpoint = isLoginMode
-        ? apiUrl("/auth/login")
-        : apiUrl("/auth/register")
+      const endpoint = isForgotPasswordMode
+        ? apiUrl("/auth/forgot-password")
+        : isLoginMode
+          ? apiUrl("/auth/login")
+          : apiUrl("/auth/register")
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(isForgotPasswordMode ? { email } : { email, password }),
       })
 
       const data = await response.json()
@@ -56,7 +61,11 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
         return
       }
 
-      if (isLoginMode) {
+      if (isForgotPasswordMode) {
+        setSuccessMessage("Se o e-mail estiver cadastrado, enviaremos um link para redefinir sua senha.")
+        setPassword("")
+        setConfirmPassword("")
+      } else if (isLoginMode) {
         if (data.token) {
           const userSession = JSON.stringify(data.user ?? {})
           sessionStorage.setItem("auth_user", userSession)
@@ -88,12 +97,14 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {isLoginMode ? "Bem-vindo de volta" : "Criar conta"}
+            {isForgotPasswordMode ? "Recuperar senha" : isLoginMode ? "Bem-vindo de volta" : "Criar conta"}
           </h2>
           <p className="text-muted-foreground">
-            {isLoginMode
-              ? "Entre com suas credenciais para acessar sua conta"
-              : "Preencha os dados para criar sua conta"}
+            {isForgotPasswordMode
+              ? "Informe seu e-mail para receber o link de recuperação"
+              : isLoginMode
+                ? "Entre com suas credenciais para acessar sua conta"
+                : "Preencha os dados para criar sua conta"}
           </p>
         </div>
 
@@ -112,30 +123,39 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="password">Senha</Label>
-                {isLoginMode && (
-                  <a
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Esqueceu a senha?
-                  </a>
-                )}
+            {!isForgotPasswordMode && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="password">Senha</Label>
+                  {isLoginMode && (
+                    <button
+                      type="button"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => {
+                        setMode("forgot-password")
+                        setErrorMessage("")
+                        setSuccessMessage("")
+                        setPassword("")
+                        setConfirmPassword("")
+                      }}
+                    >
+                      Esqueceu a senha?
+                    </button>
+                  )}
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Digite sua senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-12"
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Digite sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="h-12"
-              />
-            </div>
+            )}
 
-            {!isLoginMode && (
+            {isRegisterMode && (
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirmar senha</Label>
                 <Input
@@ -184,29 +204,54 @@ export function LoginForm({ onAuthSuccess }: LoginFormProps) {
             {isLoading
               ? isLoginMode
                 ? "Entrando..."
-                : "Cadastrando..."
+                : isForgotPasswordMode
+                  ? "Enviando..."
+                  : "Cadastrando..."
               : isLoginMode
                 ? "Entrar"
-                : "Cadastrar"}
+                : isForgotPasswordMode
+                  ? "Enviar link"
+                  : "Cadastrar"}
           </Button>
 
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          {isLoginMode ? "Ainda não tem uma conta? " : "Já possui uma conta? "}
-          <button
-            type="button"
-            className="font-medium text-foreground hover:underline"
-            onClick={() => {
-              setMode(isLoginMode ? "register" : "login")
-              setErrorMessage("")
-              setSuccessMessage("")
-              setPassword("")
-              setConfirmPassword("")
-            }}
-          >
-            {isLoginMode ? "Criar conta" : "Entrar"}
-          </button>
+          {isForgotPasswordMode ? (
+            <>
+              Lembrou sua senha?{" "}
+              <button
+                type="button"
+                className="font-medium text-foreground hover:underline"
+                onClick={() => {
+                  setMode("login")
+                  setErrorMessage("")
+                  setSuccessMessage("")
+                  setPassword("")
+                  setConfirmPassword("")
+                }}
+              >
+                Entrar
+              </button>
+            </>
+          ) : (
+            <>
+              {isLoginMode ? "Ainda não tem uma conta? " : "Já possui uma conta? "}
+              <button
+                type="button"
+                className="font-medium text-foreground hover:underline"
+                onClick={() => {
+                  setMode(isLoginMode ? "register" : "login")
+                  setErrorMessage("")
+                  setSuccessMessage("")
+                  setPassword("")
+                  setConfirmPassword("")
+                }}
+              >
+                {isLoginMode ? "Criar conta" : "Entrar"}
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>

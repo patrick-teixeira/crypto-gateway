@@ -8,6 +8,7 @@ import { clearLegacyAuthStorage, clearLegacyAuthTokenStorage, getAuthToken } fro
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
+  const [initialSuccessMessage, setInitialSuccessMessage] = useState("")
 
   useEffect(() => {
     const hasSession = Boolean(getAuthToken())
@@ -17,7 +18,11 @@ export default function LoginPage() {
       router.replace("/home")
     } else {
       clearLegacyAuthStorage()
-      const timeout = window.setTimeout(() => setIsLoading(false), 0)
+      const timeout = window.setTimeout(() => {
+        const params = new URLSearchParams(window.location.search)
+        setInitialSuccessMessage(params.get("reset") === "success" ? "Senha redefinida com sucesso. Faça seu login." : "")
+        setIsLoading(false)
+      }, 0)
       return () => window.clearTimeout(timeout)
     }
   }, [router])
@@ -32,6 +37,7 @@ export default function LoginPage() {
 
   return (
     <LoginForm
+      initialSuccessMessage={initialSuccessMessage}
       onAuthSuccess={() => {
         router.replace("/home")
       }}
