@@ -51,6 +51,7 @@ POLYGON_RPC_URL=https://polygon-rpc.com
 BSC_RPC_URL=https://bsc-dataseed.binance.org
 AVALANCHE_RPC_URL=https://api.avax.network/ext/bc/C/rpc
 BASE_RPC_URL=https://base.drpc.org
+ARBITRUM_RPC_URL=https://arb-mainnet.example.com/v2/sua-chave
 
 CHECKOUT_BASE_URL=http://localhost:3000
 APP_BASE_URL=http://localhost:3000

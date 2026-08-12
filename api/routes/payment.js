@@ -26,6 +26,7 @@ const CHAIN_RPC_URLS = {
   bsc: process.env.BSC_RPC_URL,
   avalanche: process.env.AVALANCHE_RPC_URL,
   base: process.env.BASE_RPC_URL,
+  arbitrum: process.env.ARBITRUM_RPC_URL,
 };
 
 const SUPPORTED_TOKENS = JSON.parse(fs.readFileSync(SUPPORTED_TOKENS_PATH, "utf8"));
