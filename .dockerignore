@@ -1,0 +1,11 @@
+.git
+.github
+.next
+.env
+.env.*
+.vscode
+node_modules
+npm-debug.log*
+data
+tests
+add-transactions.js
